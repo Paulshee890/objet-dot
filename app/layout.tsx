@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Script from "next/script"; // 스크립트 컴포넌트
+import Script from "next/script";
 import { Noto_Serif_KR, Noto_Sans_KR } from "next/font/google";
 import "./globals.css";
 
@@ -32,7 +32,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      {/* head 태그는 Next.js가 metadata로 알아서 관리하므로 비워둡니다. */}
       <body
         className={`${serif.variable} ${sans.variable} antialiased min-h-screen flex flex-col items-center justify-center bg-[#050505] font-sans selection:bg-[#D4AF37] selection:text-black py-8 md:py-12`}
       >
@@ -40,13 +39,11 @@ export default function RootLayout({
           {children}
         </div>
 
-        {/* [수정] 스크립트를 body 태그 안쪽, 가장 마지막에 배치합니다. */}
-        {/* strategy="afterInteractive"는 페이지 로드 직후 스크립트를 실행합니다. */}
+        {/* [수정 핵심] integrity 속성을 제거하여 차단 문제를 해결했습니다. */}
         <Script
           src="https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js"
-          integrity="sha384-TiCUE00h649CAMonG018J2ujOgDKW/kVWlChEuu4jK2txfTZ7OEqHu5/9134SX59"
           crossOrigin="anonymous"
-          strategy="afterInteractive" 
+          strategy="afterInteractive"
         />
       </body>
     </html>
