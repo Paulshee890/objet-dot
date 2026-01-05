@@ -4,14 +4,6 @@ import { useSearchParams, useRouter } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 import { analyzeSaju } from "../../lib/sajuLogic";
 
-// [핵심 수정] 타입스크립트에게 "window 안에 Kakao가 있다"고 알려주는 부분
-declare global {
-  interface Window {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    Kakao: any;
-  }
-}
-
 // 타입 정의
 interface SajuResult {
   koreanName: string;
@@ -22,10 +14,21 @@ interface SajuResult {
   direction: string;
 }
 
+// window 객체에 Kakao가 있음을 타입스크립트에 알림
+declare global {
+  interface Window {
+    // [수정] any 타입 사용 경고 무시 (외부 SDK라 어쩔 수 없음)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Kakao: any;
+  }
+}
+
 function ResultContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  
   const birthDate = searchParams.get("birthDate");
+  // const gender = searchParams.get("gender"); 
 
   const [result, setResult] = useState<SajuResult | null>(null);
   const [loading, setLoading] = useState(true);
@@ -45,43 +48,49 @@ function ResultContent() {
     return () => clearTimeout(timer);
   }, [birthDate, router]);
 
-  // [카카오톡 공유 기능]
-  const shareKakao = () => {
-    // 1. 카카오 SDK 로드 확인
+  // [기능 추가] 카카오톡 공유하기 함수
+  const shareToKakao = () => {
     if (!window.Kakao) {
-      alert("카카오톡 SDK가 아직 로딩되지 않았습니다. 잠시 후 다시 시도해주세요.");
+      alert("카카오톡 SDK가 로드되지 않았습니다.");
       return;
     }
 
-    // 2. 초기화 (스크린샷에 있던 정확한 키 적용됨)
+    // 1. 카카오 SDK 초기화
     if (!window.Kakao.isInitialized()) {
-      window.Kakao.init('5541daed53e80a7fd5abcbd6f5bf526f'); 
+      // ▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼▼
+      // 🚨 PM님! 아까 넣으셨던 [자바스크립트 키]를 여기에 다시 넣어주세요! 🚨
+      window.Kakao.init("5541daed53e80a7fd5abcbd6f5bf526f"); 
+      // ▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲▲
     }
 
-    // 3. 공유 메시지 발송
+    // 2. 현재 페이지의 URL (공유될 링크)
+    const currentUrl = window.location.href; 
+
+    // 3. 메시지 보내기
     window.Kakao.Share.sendDefault({
       objectType: 'feed',
       content: {
-        title: `[Objet Dot] ${result?.koreanName}의 부족한 기운은?`,
+        title: `[Objet Dot] ${result?.koreanName}(${result?.element})의 부족한 기운은?`,
         description: `나에게 필요한 행운의 아이템: ${result?.items.join(", ")}`,
-        imageUrl: 'https://objet-dot.vercel.app/og-image.png',
+        imageUrl: 'https://objet-dot.vercel.app/og-image.jpg', 
         link: {
-          mobileWebUrl: window.location.href,
-          webUrl: window.location.href,
+          mobileWebUrl: currentUrl,
+          webUrl: currentUrl,
         },
       },
       buttons: [
         {
           title: '결과 확인하기',
           link: {
-            mobileWebUrl: window.location.href,
-            webUrl: window.location.href,
+            mobileWebUrl: currentUrl,
+            webUrl: currentUrl,
           },
         },
       ],
     });
   };
 
+  // --- 로딩 화면 ---
   if (loading || !result) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center relative bg-noise">
@@ -96,6 +105,7 @@ function ResultContent() {
     );
   }
 
+  // --- 결과 화면 ---
   return (
     <main className="min-h-screen bg-noise pb-12 text-white relative animate-fade-in">
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-gold-500/10 to-transparent pointer-events-none" />
@@ -111,17 +121,20 @@ function ResultContent() {
       </nav>
 
       <div className="px-6 pt-2 relative z-10 flex flex-col gap-6">
+        
         {/* 1. 메인 결과 카드 */}
         <section className="animate-fade-in-up">
           <p className="text-gold-400 text-[10px] tracking-widest uppercase text-center mb-3 font-sans font-bold">Your Essential Element</p>
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 text-center shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-gold-400/20 rounded-full blur-[60px] group-hover:bg-gold-400/30 transition-all duration-500"></div>
+            
             <h1 className="relative text-5xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-gray-400 mb-4 mt-2 break-keep">
               {result.koreanName}
               <span className="block text-lg font-sans font-bold text-gold-400 mt-2 tracking-[0.2em] uppercase opacity-80">
                 {result.element} Energy
               </span>
             </h1>
+            
             <div className="relative bg-black/30 rounded-2xl p-5 border border-white/5 backdrop-blur-md">
               <p className="text-gray-200 text-sm leading-relaxed font-sans break-keep">
                 &quot;{result.desc}&quot;
@@ -138,6 +151,7 @@ function ResultContent() {
                  style={{ backgroundColor: result.color === '화이트' ? '#F1F5F9' : result.color === '블랙' ? '#18181B' : result.color === '레드' ? '#DC2626' : result.color === '그린' ? '#15803D' : '#FACC15' }}></div>
             <span className="text-white font-bold font-sans break-keep text-center">{result.color}</span>
           </div>
+          
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 flex flex-col items-center justify-center gap-3 hover:border-gold-400/30 transition-colors group">
             <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold font-sans">Direction</span>
             <span className="text-3xl group-hover:scale-110 transition-transform">🧭</span>
@@ -152,6 +166,7 @@ function ResultContent() {
             공간 처방전
           </h3>
           <div className="space-y-3">
+            {/* 아이템 1 */}
             <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-1 group hover:bg-white/10 transition-colors">
               <div className="flex items-center gap-5 p-4">
                 <div className="w-16 h-16 bg-black/30 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-white/5 group-hover:scale-105 transition-transform shrink-0">
@@ -166,7 +181,8 @@ function ResultContent() {
                 </div>
               </div>
             </div>
-            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-1 group hover:bg-white/10 transition-colors">
+             {/* 아이템 2 */}
+             <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-1 group hover:bg-white/10 transition-colors">
               <div className="flex items-center gap-5 p-4">
                 <div className="w-16 h-16 bg-black/30 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-white/5 group-hover:scale-105 transition-transform shrink-0">
                   🖼️
@@ -183,29 +199,16 @@ function ResultContent() {
           </div>
         </section>
 
-        {/* 4. 카카오톡 공유 버튼 */}
-        <section className="animate-fade-in-up delay-200">
-           <button 
-             onClick={shareKakao}
-             className="w-full bg-[#FEE500] hover:bg-[#FDD835] text-[#3c1e1e] font-sans font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-colors shadow-lg active:scale-[0.98]"
-           >
-             <span className="text-xl">💬</span> 
-             <span>카카오톡으로 친구에게 공유하기</span>
-           </button>
-        </section>
-
-        {/* 5. 유료 리포트 (Z Flip 대응 완료) */}
+        {/* 4. 유료 리포트 */}
         <section className="relative mt-4 animate-fade-in-up delay-300">
           <div className="absolute inset-0 bg-gradient-to-r from-gold-300/50 via-gold-500/50 to-gold-300/50 rounded-[2rem] opacity-60 blur-md animate-pulse"></div>
           <div className="relative bg-black/80 rounded-[2rem] overflow-hidden border border-gold-400/50 backdrop-blur-xl">
             <div className="absolute inset-0 p-8 opacity-20 filter blur-[2px] select-none pointer-events-none overflow-hidden">
               <h4 className="text-xl font-bold mb-6 font-serif text-gray-300 break-keep">2026년 월별 상세 가이드 미리보기</h4>
               <div className="space-y-4 text-sm font-sans text-gray-500">
-                <p>1월: 침실 방향을 동쪽으로...</p>
+                <p>1월: 침실 방향을...</p>
                 <p>2월: 현관에 거울을...</p>
                 <p>3월: 행운의 색상인...</p>
-                <p>4월: 중요한 계약은...</p>
-                <p>5월: 남쪽으로 머리를...</p>
               </div>
             </div>
 
@@ -213,14 +216,12 @@ function ResultContent() {
               <div className="w-14 h-14 bg-gold-gradient rounded-full flex items-center justify-center text-2xl mb-5 shadow-[0_0_20px_rgba(212,175,55,0.4)] animate-bounce">
                 🔓
               </div>
-              
-              <h3 className="text-lg md:text-2xl font-serif text-white mb-3 break-keep leading-tight px-4">
+              <h3 className="text-xl md:text-2xl font-serif text-white mb-3 break-keep leading-tight px-4">
                 <span className="text-gold-400">2026년 대운</span> 시크릿 리포트
               </h3>
-              <p className="text-gray-300 text-xs mb-8 font-sans break-keep leading-relaxed opacity-80 px-2">
+              <p className="text-gray-300 text-xs mb-8 font-sans break-keep leading-relaxed opacity-80">
                 남들에게는 보이지 않는<br className="md:hidden"/> 당신만의 월별 기회와 위기를 확인하세요.
               </p>
-              
               <button className="w-full bg-gold-gradient text-black font-bold font-sans py-4 rounded-2xl hover:scale-[1.02] transition-all shadow-[0_0_25px_rgba(212,175,55,0.3)] text-base active:scale-[0.98] flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 leading-none">
                 <span>지금 바로 잠금 해제</span>
                 <div className="flex items-center gap-1 text-sm">
@@ -231,8 +232,19 @@ function ResultContent() {
             </div>
           </div>
         </section>
+
+        {/* 5. 카카오톡 공유 버튼 */}
+        <div className="flex justify-center pb-8">
+          <button 
+            onClick={shareToKakao}
+            className="flex items-center gap-2 bg-[#FEE500] text-[#000000] px-6 py-3 rounded-xl font-sans font-bold hover:scale-105 transition-transform"
+          >
+            <span className="text-xl">💬</span>
+            카카오톡으로 결과 공유하기
+          </button>
+        </div>
         
-        <footer className="mt-8 text-center text-[10px] text-gray-600 pb-8 font-sans animate-fade-in-up delay-500">
+        <footer className="text-center text-[10px] text-gray-600 pb-8 font-sans animate-fade-in-up delay-500">
           © 2026 Objet Dot. Design Your Luck.
         </footer>
       </div>
