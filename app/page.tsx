@@ -2,60 +2,64 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    // 전체 화면 컨테이너 (노이즈 질감 배경 적용)
-    <main className="relative min-h-screen flex flex-col items-center justify-center p-6 text-center bg-noise overflow-hidden">
+    <main className="relative min-h-screen flex flex-col justify-between bg-noise overflow-hidden">
       
-      {/* 1. 배경 장식 요소 (은은하게 빛나는 달/원) */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gold-400/10 rounded-full blur-[100px] pointer-events-none" />
-
-      {/* 2. 상단 작은 태그 */}
-      <div className="relative z-10 animate-fade-in-up delay-0">
-        <span className="inline-block px-3 py-1 mb-6 text-[10px] tracking-[0.3em] text-gold-300 border border-gold-500/30 rounded-full uppercase bg-black/30 backdrop-blur-sm">
-          Oriental Modernism
-        </span>
+      {/* 1. 배경 아트워크 */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[150%] aspect-square bg-gradient-to-b from-charcoal to-transparent rounded-full opacity-60 blur-3xl" />
+        <div className="absolute top-[20%] left-1/2 -translate-x-1/2 w-[300px] h-[300px] bg-gold-500/10 rounded-full blur-[100px] animate-pulse" />
       </div>
 
-      {/* 3. 메인 타이틀 (황금빛 그라데이션 효과) */}
-      <h1 className="relative z-10 font-serif text-5xl md:text-6xl font-bold mb-6 animate-fade-in-up delay-100">
-        <span className="text-gold">Objet Dot.</span>
-      </h1>
-
-      {/* 4. 서브 카피 */}
-      <p className="relative z-10 font-serif text-lg md:text-xl text-gray-300 mb-8 leading-relaxed animate-fade-in-up delay-200">
-        흐름을 바꾸는<br />
-        작은 점 하나.
-      </p>
-
-      {/* 5. 설명 텍스트 */}
-      <p className="relative z-10 text-sm text-gray-500 mb-12 max-w-xs mx-auto leading-relaxed animate-fade-in-up delay-300">
-        공간의 밸런스를 맞추는 데이터.<br />
-        당신의 사주에 부족한 기운을 찾아<br />
-        가장 세련된 오브제로 채워드립니다.
-      </p>
-
-      {/* 6. 시작하기 버튼 (숨쉬는 애니메이션) */}
-      <div className="relative z-10 animate-fade-in-up delay-500">
-        <Link
-          href="/input"
-          className="group relative inline-flex items-center justify-center px-8 py-4 font-serif font-bold text-black transition-all duration-300 bg-gold-400 rounded-full hover:scale-105 hover:bg-gold-300 hover:shadow-[0_0_30px_rgba(212,175,55,0.4)]"
-        >
-          {/* 버튼 안쪽 텍스트 */}
-          <span className="mr-2">내 부족한 오행 분석하기</span>
-          <span className="transition-transform group-hover:translate-x-1">→</span>
-          
-          {/* 버튼 뒤에서 퍼지는 파동 효과 (Ping) */}
-          <span className="absolute w-full h-full rounded-full bg-gold-400 opacity-30 animate-ping group-hover:opacity-10"></span>
-        </Link>
+      {/* 2. 상단 브랜드 영역 */}
+      <header className="relative z-10 p-6 pt-12 text-center">
+        <div className="inline-flex items-center gap-2 border border-white/10 bg-white/5 backdrop-blur-md px-4 py-1.5 rounded-full mb-8 animate-fade-in-up">
+          <span className="w-1.5 h-1.5 rounded-full bg-gold-400 animate-pulse" />
+          <span className="text-[10px] tracking-[0.3em] text-gray-300 uppercase">
+            Oriental Modernism
+          </span>
+        </div>
         
-        <p className="mt-4 text-[10px] text-gray-600">
-          * 별도 가입 없이 30초 만에 완료됩니다.
-        </p>
-      </div>
+        <h1 className="text-6xl md:text-7xl font-serif font-bold text-white leading-tight tracking-tight animate-fade-in-up delay-100">
+          Objet<br />
+          <span className="text-gold">Dot.</span>
+        </h1>
+      </header>
 
-      {/* 하단 장식 텍스트 */}
-      <div className="absolute bottom-8 text-[10px] text-gray-700 tracking-widest uppercase">
-        Design Your Luck
-      </div>
+      {/* 3. 중앙 메시지 */}
+      <section className="relative z-10 flex-1 flex flex-col items-center justify-center text-center px-6">
+        <p className="font-serif text-xl md:text-2xl text-gray-200 leading-relaxed opacity-90 animate-fade-in-up">
+          흐름을 바꾸는<br />
+          작은 점 하나.
+        </p>
+        <div className="w-[1px] h-16 bg-gradient-to-b from-gold-400/0 via-gold-400/50 to-gold-400/0 my-8 animate-pulse" />
+        <p className="text-xs text-gray-500 max-w-[240px] leading-relaxed animate-fade-in-up">
+          사주 명리학 데이터로 공간의 결핍을 찾아<br />
+          당신의 운을 완성하는 오브제를 제안합니다.
+        </p>
+      </section>
+
+      {/* 4. 하단 액션바 */}
+      <footer className="relative z-20 p-6 pb-10">
+        <div className="bg-white/5 backdrop-blur-xl border border-white/10 p-2 rounded-2xl shadow-2xl animate-fade-in-up">
+          <Link
+            href="/input"
+            className="group relative flex items-center justify-between bg-gold-gradient px-6 py-4 rounded-xl transition-transform active:scale-[0.98]"
+          >
+            <div className="flex flex-col text-left">
+              <span className="text-[10px] text-gold-900 font-bold tracking-widest uppercase mb-0.5">Start Analysis</span>
+              <span className="text-black font-serif font-bold text-lg">내 부족한 오행 찾기</span>
+            </div>
+            
+            <div className="w-10 h-10 bg-black/10 rounded-full flex items-center justify-center group-hover:bg-black/20 transition-colors">
+              <span className="text-black text-xl">→</span>
+            </div>
+          </Link>
+          
+          <p className="text-center text-[10px] text-gray-500 mt-3">
+            * 별도 가입 없이 30초 만에 완료됩니다.
+          </p>
+        </div>
+      </footer>
     </main>
   );
 }

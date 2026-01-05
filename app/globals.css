@@ -2,13 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 1. 전체 배경 설정 */
+/* 전체 배경 및 폰트 색상 */
 body {
-  background-color: #050505; /* PC 배경은 더 어둡게 */
-  color: #E2E8F0; /* 기본 글씨는 연한 회색 */
+  background-color: #050505;
+  color: #E2E8F0;
 }
 
-/* 2. 화면에 미세한 노이즈 질감 깔기 (디지털 느낌 제거) */
+/* 배경 노이즈 효과 (SVG 데이터 URI 사용으로 파일 없이 구현) */
 .bg-noise {
   position: relative;
 }
@@ -25,9 +25,9 @@ body {
   z-index: 0;
 }
 
-/* 3. 황금색 그라데이션 텍스트 (반짝이는 글씨) */
+/* 황금빛 텍스트 효과 */
 .text-gold {
-  background: linear-gradient(to right, #FDE68A, #D4AF37, #FDE68A);
+  background: linear-gradient(to right, #FDE68A, #D4AF37, #8A6D1F, #D4AF37, #FDE68A);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -35,14 +35,7 @@ body {
   animation: shine 3s linear infinite;
 }
 
-/* 금색 글씨가 살짝 흐르는 애니메이션 */
-@keyframes shine {
-  to {
-    background-position: 200% center;
-  }
-}
-
-/* 스크롤바 숨기기 (깔끔하게) */
+/* 스크롤바 숨김 */
 ::-webkit-scrollbar {
   display: none;
 }
