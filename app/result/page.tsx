@@ -82,6 +82,12 @@ function ResultContent() {
     }
   };
 
+  // [NEW] 네이버 쇼핑 검색 링크 열기 함수
+  const openShopSearch = (keyword: string) => {
+    const url = `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(keyword)}`;
+    window.open(url, '_blank');
+  };
+
   if (loading || !result) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center relative bg-noise">
@@ -135,11 +141,11 @@ function ResultContent() {
           </div>
         </section>
 
-        {/* 3. 공간 처방전 */}
+        {/* 3. 공간 처방전 (무료 - 미끼 상품) */}
         <section className="animate-fade-in-up delay-200">
           <h3 className="text-md font-serif text-white mb-4 flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-gold-400 rounded-full"></span>
-            공간 처방전
+            공간 처방전 (Basic)
           </h3>
           <div className="space-y-3">
             <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-1 group hover:bg-white/10 transition-colors">
@@ -148,7 +154,12 @@ function ResultContent() {
                 <div className="flex-1">
                   <h4 className="text-white font-bold mb-1 font-sans text-lg break-keep">{result.items[0]}</h4>
                   <p className="text-xs text-gray-400 mb-3 font-sans break-keep">부족한 기운을 채워주는 아이템</p>
-                  <button className="text-[10px] bg-gold-400/20 hover:bg-gold-400 hover:text-black text-gold-300 px-4 py-2 rounded-full transition-all font-bold font-sans">최저가 확인하기 →</button>
+                  <button 
+                    onClick={() => openShopSearch(result.items[0])}
+                    className="text-[10px] bg-gold-400/20 hover:bg-gold-400 hover:text-black text-gold-300 px-4 py-2 rounded-full transition-all font-bold font-sans"
+                  >
+                    최저가 확인하기 →
+                  </button>
                 </div>
               </div>
             </div>
@@ -158,14 +169,19 @@ function ResultContent() {
                 <div className="flex-1">
                   <h4 className="text-white font-bold mb-1 font-sans text-lg break-keep">{result.items[1]}</h4>
                   <p className="text-xs text-gray-400 mb-3 font-sans break-keep">재물운을 부르는 배치</p>
-                  <button className="text-[10px] bg-gold-400/20 hover:bg-gold-400 hover:text-black text-gold-300 px-4 py-2 rounded-full transition-all font-bold font-sans">스타일링 예시 보기 →</button>
+                  <button 
+                    onClick={() => openShopSearch(result.items[1])}
+                    className="text-[10px] bg-gold-400/20 hover:bg-gold-400 hover:text-black text-gold-300 px-4 py-2 rounded-full transition-all font-bold font-sans"
+                  >
+                    스타일링 예시 보기 →
+                  </button>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* 4. 유료 리포트 (업그레이드 버전) */}
+        {/* 4. 유료 리포트 (Premium) */}
         <section className="relative mt-4 animate-fade-in-up delay-300">
           <div className="absolute inset-0 bg-gradient-to-r from-gold-300/50 via-gold-500/50 to-gold-300/50 rounded-[2rem] opacity-60 blur-md animate-pulse"></div>
           
@@ -205,88 +221,134 @@ function ResultContent() {
               </>
             )}
 
-            {/* --- B. 해제 상태 (Content Rich Version) --- */}
+            {/* --- B. 해제 상태 (Actionable Links Added) --- */}
             {isPaid && (
               <div className="relative z-10 bg-charcoal animate-fade-in">
                  
-                 {/* 1. 리포트 헤더 */}
+                 {/* 리포트 헤더 */}
                  <div className="bg-gradient-to-b from-gold-900/40 to-charcoal p-8 pb-4 border-b border-white/5">
                     <div className="flex items-center gap-2 mb-2">
                        <span className="text-2xl">🗝️</span>
                        <h3 className="text-xl font-serif text-gold-400">Premium Secret Report</h3>
                     </div>
-                    <p className="text-[11px] text-gray-400 font-sans mb-6">
-                       당신의 생년월일시({birthDate})를 기반으로 분석된<br/>2026년 정밀 운세 리포트입니다.
-                    </p>
-
-                    {/* 종합 운세 스코어 */}
-                    <div className="flex items-end gap-3 mb-4">
+                    
+                    <div className="flex items-end gap-3 mb-4 mt-6">
                        <div className="text-5xl font-bold font-serif text-white">88<span className="text-sm font-sans text-gray-500 font-normal ml-1">/100</span></div>
                        <div className="text-sm text-gold-400 font-bold mb-2">▲ 상승세</div>
                     </div>
-                    
-                    {/* 키워드 태그 */}
                     <div className="flex gap-2 flex-wrap">
                        <span className="px-3 py-1 bg-white/10 rounded-full text-[10px] text-white border border-white/10">#재물운상승</span>
                        <span className="px-3 py-1 bg-white/10 rounded-full text-[10px] text-white border border-white/10">#귀인출현</span>
-                       <span className="px-3 py-1 bg-white/10 rounded-full text-[10px] text-white border border-white/10">#이동수주의</span>
                     </div>
                  </div>
 
-                 {/* 2. 분야별 상세 분석 (2단 그리드) */}
+                 {/* 분야별 상세 분석 + 구매 링크 추가 */}
                  <div className="p-6 grid grid-cols-1 gap-4">
+                    
+                    {/* 💰 재물운 */}
                     <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
                        <h4 className="text-gold-400 font-bold text-sm mb-2 flex items-center gap-2">💰 재물운 (Wealth)</h4>
-                       <p className="text-xs text-gray-300 leading-relaxed break-keep">
-                          상반기보다는 <strong className="text-white">하반기(8월 이후)</strong>에 큰 흐름이 들어옵니다. 무리한 투자는 피하고, 현금 흐름을 확보하는 것이 유리합니다. 지갑을 검은색으로 바꾸면 돈이 새는 것을 막을 수 있습니다.
+                       <p className="text-xs text-gray-300 leading-relaxed break-keep mb-4">
+                          상반기보다는 하반기(8월 이후)에 큰 흐름이 들어옵니다. 무리한 투자는 피하고 현금 흐름을 확보하세요.
                        </p>
+                       <div className="bg-black/30 rounded-xl p-3 flex items-start gap-4 border border-gold-400/20 shadow-inner relative">
+                          <div className="text-3xl filter drop-shadow-[0_0_5px_rgba(212,175,55,0.5)] pt-1">🖤</div>
+                          <div className="flex-1">
+                             <div className="text-[10px] text-gold-400 font-bold tracking-widest mb-1">✨ KEY OBJET</div>
+                             <div className="text-white font-bold font-sans mb-1">검은색 가죽 지갑</div>
+                             <div className="text-[10px] text-gray-400 leading-tight font-sans mb-2">
+                               검은색(水)의 기운이 충동적인 지출(火)을 눌러주어 재물이 새는 것을 막아줍니다.
+                             </div>
+                             {/* [NEW] 구매 버튼 추가 */}
+                             <button 
+                                onClick={() => openShopSearch("검은색 가죽 지갑")}
+                                className="w-full bg-gold-400/10 hover:bg-gold-400 hover:text-black border border-gold-400/30 text-gold-400 text-[10px] py-2 rounded-lg transition-colors font-bold"
+                             >
+                                🛍️ 추천 아이템 구매하기
+                             </button>
+                          </div>
+                       </div>
                     </div>
+
+                    {/* ❤️ 애정/인간관계 */}
                     <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
                        <h4 className="text-red-300 font-bold text-sm mb-2 flex items-center gap-2">❤️ 애정/인간관계</h4>
-                       <p className="text-xs text-gray-300 leading-relaxed break-keep">
-                          새로운 인연보다는 <strong className="text-white">오래된 인연</strong>이 귀인이 되어 돌아옵니다. 침실의 머리 방향을 {result.direction}쪽으로 두면 관계가 개선됩니다.
+                       <p className="text-xs text-gray-300 leading-relaxed break-keep mb-4">
+                          새로운 인연보다는 오래된 인연이 귀인이 됩니다. 침실 분위기를 따뜻하게 바꾸면 관계가 개선됩니다.
                        </p>
+                       <div className="bg-black/30 rounded-xl p-3 flex items-start gap-4 border border-red-400/20 shadow-inner relative">
+                          <div className="text-3xl filter drop-shadow-[0_0_5px_rgba(248,113,113,0.5)] pt-1">💡</div>
+                          <div className="flex-1">
+                             <div className="text-[10px] text-red-300 font-bold tracking-widest mb-1">✨ KEY OBJET</div>
+                             <div className="text-white font-bold font-sans mb-1">웜톤 무드등</div>
+                             <div className="text-[10px] text-gray-400 leading-tight font-sans mb-2">
+                               따뜻한 빛은 공간의 온도를 높여 차가운 기운을 녹이고 친밀감을 형성합니다.
+                             </div>
+                             {/* [NEW] 구매 버튼 추가 */}
+                             <button 
+                                onClick={() => openShopSearch("웜톤 무드등")}
+                                className="w-full bg-red-400/10 hover:bg-red-400 hover:text-black border border-red-400/30 text-red-300 text-[10px] py-2 rounded-lg transition-colors font-bold"
+                             >
+                                🛍️ 추천 아이템 구매하기
+                             </button>
+                          </div>
+                       </div>
                     </div>
+
+                    {/* 💼 직업/학업 */}
                     <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
                        <h4 className="text-blue-300 font-bold text-sm mb-2 flex items-center gap-2">💼 직업/학업</h4>
-                       <p className="text-xs text-gray-300 leading-relaxed break-keep">
-                          변화보다는 <strong className="text-white">안정</strong>을 택해야 할 시기입니다. 이직을 고려한다면 5월은 피하는 것이 좋습니다. 책상 위에 작은 스투키 화분을 두면 집중력이 올라갑니다.
+                       <p className="text-xs text-gray-300 leading-relaxed break-keep mb-4">
+                          변화보다는 안정을 택해야 할 시기입니다. 책상 위를 정리하여 집중력을 높이는 것이 중요합니다.
                        </p>
+                       <div className="bg-black/30 rounded-xl p-3 flex items-start gap-4 border border-blue-400/20 shadow-inner relative">
+                          <div className="text-3xl filter drop-shadow-[0_0_5px_rgba(96,165,250,0.5)] pt-1">🪴</div>
+                          <div className="flex-1">
+                             <div className="text-[10px] text-blue-300 font-bold tracking-widest mb-1">✨ KEY OBJET</div>
+                             <div className="text-white font-bold font-sans mb-1">소형 스투키 화분</div>
+                             <div className="text-[10px] text-gray-400 leading-tight font-sans mb-2">
+                               곧게 자라는 식물의 목(木) 기운이 성장을 돕고, 공기 정화로 머리를 맑게 합니다.
+                             </div>
+                             {/* [NEW] 구매 버튼 추가 */}
+                             <button 
+                                onClick={() => openShopSearch("소형 스투키 화분")}
+                                className="w-full bg-blue-400/10 hover:bg-blue-400 hover:text-black border border-blue-400/30 text-blue-300 text-[10px] py-2 rounded-lg transition-colors font-bold"
+                             >
+                                🛍️ 추천 아이템 구매하기
+                             </button>
+                          </div>
+                       </div>
                     </div>
                  </div>
 
-                 {/* 3. 월별 흐름 (Timeline) */}
+                 {/* 월별 흐름 */}
                  <div className="px-6 pb-6">
                     <h4 className="text-white font-serif text-md mb-4 flex items-center gap-2">
                        <span className="w-1.5 h-1.5 bg-gold-400 rounded-full"></span> 2026년 흐름
                     </h4>
                     <div className="space-y-3">
-                       <div className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                       <div className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 items-center">
                           <div className="text-gold-400 font-bold text-xs w-12 shrink-0">1월-3월<br/>(봄)</div>
                           <div className="text-xs text-gray-400 break-keep">
-                             시작의 기운이 좋으나 마무리가 약할 수 있습니다. 계획을 세우되, 실행은 신중히 하세요. <strong className="text-white">행운의 아이템: {result.items && result.items[0]}</strong>
+                             시작의 기운이 좋으나 마무리가 약합니다.
+                             <br/><strong className="text-white mt-1 block">👉 추천: {result.items && result.items[0]} 휴대</strong>
                           </div>
                        </div>
-                       <div className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
+                       <div className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 items-center">
                           <div className="text-red-400 font-bold text-xs w-12 shrink-0">4월-6월<br/>(여름)</div>
                           <div className="text-xs text-gray-400 break-keep">
-                             에너지가 과열될 수 있습니다. 감정적인 결정을 피하고, 물가(수변 공원 등)를 자주 찾으세요. 건강 검진을 받기 좋은 시기입니다.
-                          </div>
-                       </div>
-                       <div className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5">
-                          <div className="text-white font-bold text-xs w-12 shrink-0">하반기<br/>Key</div>
-                          <div className="text-xs text-gray-400 break-keep">
-                             그동안의 노력이 결실을 맺습니다. 특히 10월에는 뜻밖의 수익이 생길 수 있으니 기회를 놓치지 마세요.
+                             에너지가 과열될 수 있으니 물가를 찾으세요.
+                             <br/><strong className="text-white mt-1 block">👉 추천: 블루 계열 소품</strong>
                           </div>
                        </div>
                     </div>
                  </div>
 
-                 {/* 4. 스페셜 팁 (Warning) */}
+                 {/* 스페셜 팁 */}
                  <div className="mx-6 mb-8 bg-red-900/20 border border-red-500/20 p-4 rounded-xl">
                     <h4 className="text-red-400 font-bold text-xs mb-1">⚠️ 주의사항 (Warning)</h4>
                     <p className="text-[11px] text-red-200/80 leading-relaxed break-keep">
-                       올해 집안의 <strong className="text-red-200">북서쪽</strong>에는 붉은 물건을 두지 마세요. 기운이 충돌하여 두통을 유발할 수 있습니다. 깨진 거울이나 그릇은 즉시 버려야 합니다.
+                       올해 집안의 <strong className="text-red-200">북서쪽</strong>에는 붉은 물건을 두지 마세요. 깨진 거울은 즉시 버리세요.
                     </p>
                  </div>
 
