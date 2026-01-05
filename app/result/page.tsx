@@ -83,7 +83,7 @@ function ResultContent() {
       content: {
         title: `[Objet Dot] ${result?.koreanName}(${result?.element})의 부족한 기운은?`,
         description: `나에게 필요한 행운의 아이템: ${result?.items.join(", ")}`,
-        imageUrl: 'https://objet-dot.vercel.app/og-image.jpg',
+        imageUrl: 'https://objet-dot.vercel.app/og-image.png',
         link: {
           mobileWebUrl: currentUrl,
           webUrl: currentUrl,
