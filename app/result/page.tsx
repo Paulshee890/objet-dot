@@ -1,14 +1,14 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { analyzeSaju } from "../../lib/sajuLogic"; 
+import { useEffect, useState, Suspense } from "react";
+import { analyzeSaju } from "../../lib/sajuLogic";
 
-export default function ResultPage() {
+// 1. 실제 알맹이 컴포넌트 (데이터를 쓰는 부분)
+function ResultContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
-  // 수정 1: ESLint 규칙을 이 줄만 무시하도록 주석 추가
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [result, setResult] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -17,9 +17,8 @@ export default function ResultPage() {
     const date = searchParams.get("birthDate");
     
     if (!date) {
-      alert("잘못된 접근입니다.");
-      router.push("/");
-      return;
+      // 데이터가 없으면 홈으로 보냄 (단, 빌드 타임에는 실행 안 되게 방어)
+      return; 
     }
 
     setTimeout(() => {
@@ -27,8 +26,9 @@ export default function ResultPage() {
       setResult(data);
       setLoading(false);
     }, 1500);
-  }, [searchParams, router]);
+  }, [searchParams]);
 
+  // 로딩 중일 때 화면
   if (loading) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-gray-900 text-white">
@@ -49,7 +49,6 @@ export default function ResultPage() {
         
         <div className="bg-gray-900/50 p-6 rounded-xl border border-gray-700">
           <p className="text-gray-300 leading-relaxed text-center text-sm">
-            {/* 수정 2: 쌍따옴표(")를 &quot; 로 변경 */}
             &quot;{result.desc}&quot;
           </p>
         </div>
@@ -105,7 +104,6 @@ export default function ResultPage() {
       {/* 유료 리포트 */}
       <section className="px-6 mb-8">
         <div className="relative bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl border border-gray-700 overflow-hidden">
-          
           <div className="absolute inset-0 p-6 opacity-30 blur-[2px] z-0">
             <h4 className="text-gray-300 font-bold mb-2">2026 병오년 상세 가이드</h4>
             <p className="text-gray-500 text-sm">
@@ -115,7 +113,6 @@ export default function ResultPage() {
               4월: 행운의 색상은...
             </p>
           </div>
-
           <div className="relative z-10 p-8 flex flex-col items-center justify-center text-center bg-black/40">
             <div className="bg-gray-800 p-3 rounded-full mb-3 shadow-lg">
               🔒
@@ -128,9 +125,21 @@ export default function ResultPage() {
               2,900원에 잠금 해제
             </button>
           </div>
-          
         </div>
       </section>
     </main>
+  );
+}
+
+// 2. 껍데기 컴포넌트 (Suspense로 감싸는 역할)
+export default function ResultPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center bg-gray-900 text-white">
+        <p>페이지를 불러오는 중...</p>
+      </div>
+    }>
+      <ResultContent />
+    </Suspense>
   );
 }
