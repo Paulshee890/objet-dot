@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 전체 배경을 다크 모드(진한 회색)로 고정 */
+body {
+  background-color: #111827;
+  color: #f3f4f6;
+}
