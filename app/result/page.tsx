@@ -14,11 +14,17 @@ interface SajuResult {
   direction: string;
 }
 
+// 윈도우 객체에 Kakao가 있음을 타입스크립트에게 알림
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    Kakao: any;
+  }
+}
+
 function ResultContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  
-  // useEffect 의존성 이슈 해결: 값만 미리 추출
   const birthDate = searchParams.get("birthDate");
 
   const [result, setResult] = useState<SajuResult | null>(null);
@@ -39,6 +45,42 @@ function ResultContent() {
     return () => clearTimeout(timer);
   }, [birthDate, router]);
 
+  // [기능 추가] 카카오톡 공유 함수
+  const shareKakao = () => {
+    if (!window.Kakao) {
+      alert("카카오톡 SDK가 로딩되지 않았습니다.");
+      return;
+    }
+
+    // 1. 카카오 SDK 초기화 (여기에 발급받은 키를 넣으세요!)
+    if (!window.Kakao.isInitialized()) {
+      window.Kakao.init('5541daed53e80a7fd5abcbd6f5bf526f'); // <--- [여기!] 아까 복사한 키를 붙여넣으세요 (따옴표 안에)
+    }
+
+    // 2. 공유 메시지 보내기
+    window.Kakao.Share.sendDefault({
+      objectType: 'feed',
+      content: {
+        title: `${result?.koreanName}의 부족한 기운은?`,
+        description: `나에게 필요한 행운의 아이템: ${result?.items.join(", ")}`,
+        imageUrl: 'https://objet-dot.vercel.app/og-image.png', // 썸네일 이미지 주소
+        link: {
+          mobileWebUrl: window.location.href,
+          webUrl: window.location.href,
+        },
+      },
+      buttons: [
+        {
+          title: '결과 확인하기',
+          link: {
+            mobileWebUrl: window.location.href,
+            webUrl: window.location.href,
+          },
+        },
+      ],
+    });
+  };
+
   // --- 로딩 화면 ---
   if (loading || !result) {
     return (
@@ -57,10 +99,8 @@ function ResultContent() {
   // --- 결과 화면 ---
   return (
     <main className="min-h-screen bg-noise pb-12 text-white relative animate-fade-in">
-      {/* 배경 장식 */}
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-gold-500/10 to-transparent pointer-events-none" />
 
-      {/* 상단 네비게이션 */}
       <nav className="relative z-10 px-6 py-6 flex justify-between items-center">
         <button 
           onClick={() => router.push("/")}
@@ -150,14 +190,22 @@ function ResultContent() {
           </div>
         </section>
 
-        {/* 4. 유료 리포트 (문제 해결된 버전) */}
+        {/* 4. [신규 추가] 카카오톡 공유 버튼 */}
+        <section className="animate-fade-in-up delay-200">
+           <button 
+             onClick={shareKakao}
+             className="w-full bg-[#FEE500] hover:bg-[#FDD835] text-[#3c1e1e] font-sans font-bold py-4 rounded-2xl flex items-center justify-center gap-2 transition-colors"
+           >
+             <span className="text-xl">💬</span> 
+             <span>카카오톡으로 친구에게 공유하기</span>
+           </button>
+        </section>
+
+        {/* 5. 유료 리포트 */}
         <section className="relative mt-4 animate-fade-in-up delay-300">
-          {/* 테두리 그라데이션 */}
           <div className="absolute inset-0 bg-gradient-to-r from-gold-300/50 via-gold-500/50 to-gold-300/50 rounded-[2rem] opacity-60 blur-md animate-pulse"></div>
           
           <div className="relative bg-black/80 rounded-[2rem] overflow-hidden border border-gold-400/50 backdrop-blur-xl">
-            
-            {/* [수정 1] 배경 글씨를 absolute로 뒤로 보냄 (높이에 영향 안 줌) */}
             <div className="absolute inset-0 p-8 opacity-20 filter blur-[2px] select-none pointer-events-none overflow-hidden">
               <h4 className="text-xl font-bold mb-6 font-serif text-gray-300 break-keep">2026년 월별 상세 가이드 미리보기</h4>
               <div className="space-y-4 text-sm font-sans text-gray-500">
@@ -169,17 +217,13 @@ function ResultContent() {
               </div>
             </div>
 
-            {/* [수정 2] 진짜 내용(잠금)을 relative로 설정하여 상자 높이를 결정하게 함 */}
             <div className="relative z-10 flex flex-col items-center justify-center p-8 text-center bg-gradient-to-b from-black/40 to-black/90">
               <div className="w-14 h-14 bg-gold-gradient rounded-full flex items-center justify-center text-2xl mb-5 shadow-[0_0_20px_rgba(212,175,55,0.4)] animate-bounce">
                 🔓
               </div>
-              
-              {/* [수정 3] break-keep 적용으로 '리포트' 글자가 끊기지 않음 */}
-              <h3 className="text-2xl font-serif text-white mb-2 break-keep">
+              <h3 className="text-xl md:text-2xl font-serif text-white mb-3 break-keep leading-tight px-4">
                 <span className="text-gold-400">2026년 대운</span> 시크릿 리포트
               </h3>
-              
               <p className="text-gray-300 text-xs mb-8 font-sans break-keep leading-relaxed opacity-80">
                 남들에게는 보이지 않는<br className="md:hidden"/> 당신만의 월별 기회와 위기를 확인하세요.
               </p>
