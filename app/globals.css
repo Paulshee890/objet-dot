@@ -2,7 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 1. 전체 배경 설정 */
 body {
-  background-color: #111827;
-  color: #f3f4f6;
+  background-color: #050505; /* PC 배경은 더 어둡게 */
+  color: #E2E8F0; /* 기본 글씨는 연한 회색 */
+}
+
+/* 2. 화면에 미세한 노이즈 질감 깔기 (디지털 느낌 제거) */
+.bg-noise {
+  position: relative;
+}
+.bg-noise::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 3. 황금색 그라데이션 텍스트 (반짝이는 글씨) */
+.text-gold {
+  background: linear-gradient(to right, #FDE68A, #D4AF37, #FDE68A);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  background-size: 200% auto;
+  animation: shine 3s linear infinite;
+}
+
+/* 금색 글씨가 살짝 흐르는 애니메이션 */
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* 스크롤바 숨기기 (깔끔하게) */
+::-webkit-scrollbar {
+  display: none;
 }
