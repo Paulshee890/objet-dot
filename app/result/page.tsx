@@ -58,7 +58,8 @@ function ResultContent() {
     if (typeof window === "undefined" || !window.Kakao) return;
 
     if (!window.Kakao.isInitialized()) {
-      window.Kakao.init("YOUR_KAKAO_JAVASCRIPT_KEY"); // [필수] 키값 확인
+      // ⚠️ 실제 서비스 시 본인의 JavaScript 키로 교체 필요
+      window.Kakao.init("YOUR_KAKAO_JAVASCRIPT_KEY"); 
     }
 
     const homeUrl = window.location.origin; 
@@ -82,7 +83,6 @@ function ResultContent() {
     }
   };
 
-  // [NEW] 네이버 쇼핑 검색 링크 열기 함수
   const openShopSearch = (keyword: string) => {
     const url = `https://search.shopping.naver.com/search/all?query=${encodeURIComponent(keyword)}`;
     window.open(url, '_blank');
@@ -101,20 +101,22 @@ function ResultContent() {
   }
 
   return (
-    <main className="min-h-screen bg-noise pb-12 text-white relative animate-fade-in">
+    <main className="min-h-screen bg-noise pb-12 text-white relative animate-fade-in text-sans">
       <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-gold-500/10 to-transparent pointer-events-none" />
 
+      {/* 상단 네비게이션 */}
       <nav className="relative z-10 px-6 py-6 flex justify-between items-center">
-        <button onClick={() => router.push("/")} className="text-gray-400 text-sm hover:text-white transition-colors font-sans flex items-center gap-1">
+        <button onClick={() => router.push("/")} className="text-gray-400 text-sm hover:text-white transition-colors flex items-center gap-1">
           <span className="text-lg">←</span> 처음으로
         </button>
         <span className="font-serif text-gold-400 text-xs tracking-[0.2em]">OBJET DOT</span>
       </nav>
 
       <div className="px-6 pt-2 relative z-10 flex flex-col gap-6">
+        
         {/* 1. 메인 결과 */}
         <section className="animate-fade-in-up">
-          <p className="text-gold-400 text-[10px] tracking-widest uppercase text-center mb-3 font-sans font-bold">Your Essential Element</p>
+          <p className="text-gold-400 text-[10px] tracking-widest uppercase text-center mb-3 font-bold">Your Essential Element</p>
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 text-center shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-gold-400/20 rounded-full blur-[60px] group-hover:bg-gold-400/30 transition-all duration-500"></div>
             <h1 className="relative text-5xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-gray-400 mb-4 mt-2 break-keep">
@@ -122,7 +124,7 @@ function ResultContent() {
               <span className="block text-lg font-sans font-bold text-gold-400 mt-2 tracking-[0.2em] uppercase opacity-80">{result.element} Energy</span>
             </h1>
             <div className="relative bg-black/30 rounded-2xl p-5 border border-white/5 backdrop-blur-md">
-              <p className="text-gray-200 text-sm leading-relaxed font-sans break-keep">&quot;{result.desc}&quot;</p>
+              <p className="text-gray-200 text-sm leading-relaxed break-keep font-sans">&quot;{result.desc}&quot;</p>
             </div>
           </div>
         </section>
@@ -130,18 +132,18 @@ function ResultContent() {
         {/* 2. 상세 정보 */}
         <section className="grid grid-cols-2 gap-4 animate-fade-in-up delay-100">
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 flex flex-col items-center justify-center gap-3 hover:border-gold-400/30 transition-colors group">
-            <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold font-sans">Lucky Color</span>
+            <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Lucky Color</span>
             <div className="w-10 h-10 rounded-full shadow-lg border-2 border-white/10 group-hover:scale-110 transition-transform" style={{ backgroundColor: result.color === '화이트' ? '#F1F5F9' : result.color === '블랙' ? '#18181B' : result.color === '레드' ? '#DC2626' : result.color === '그린' ? '#15803D' : '#FACC15' }}></div>
-            <span className="text-white font-bold font-sans break-keep text-center">{result.color}</span>
+            <span className="text-white font-bold break-keep text-center">{result.color}</span>
           </div>
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 flex flex-col items-center justify-center gap-3 hover:border-gold-400/30 transition-colors group">
-            <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold font-sans">Direction</span>
+            <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold">Direction</span>
             <span className="text-3xl group-hover:scale-110 transition-transform">🧭</span>
-            <span className="text-white font-bold font-sans break-keep text-center">{result.direction}</span>
+            <span className="text-white font-bold break-keep text-center">{result.direction}</span>
           </div>
         </section>
 
-        {/* 3. 공간 처방전 (무료 - 미끼 상품) */}
+        {/* 3. 공간 처방전 (Basic) */}
         <section className="animate-fade-in-up delay-200">
           <h3 className="text-md font-serif text-white mb-4 flex items-center gap-2">
             <span className="w-1.5 h-1.5 bg-gold-400 rounded-full"></span>
@@ -152,14 +154,9 @@ function ResultContent() {
               <div className="flex items-center gap-5 p-4">
                 <div className="w-16 h-16 bg-black/30 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-white/5 group-hover:scale-105 transition-transform shrink-0">🎁</div>
                 <div className="flex-1">
-                  <h4 className="text-white font-bold mb-1 font-sans text-lg break-keep">{result.items[0]}</h4>
-                  <p className="text-xs text-gray-400 mb-3 font-sans break-keep">부족한 기운을 채워주는 아이템</p>
-                  <button 
-                    onClick={() => openShopSearch(result.items[0])}
-                    className="text-[10px] bg-gold-400/20 hover:bg-gold-400 hover:text-black text-gold-300 px-4 py-2 rounded-full transition-all font-bold font-sans"
-                  >
-                    최저가 확인하기 →
-                  </button>
+                  <h4 className="text-white font-bold mb-1 text-lg break-keep">{result.items[0]}</h4>
+                  <p className="text-xs text-gray-400 mb-3 break-keep">부족한 기운을 채워주는 아이템</p>
+                  <button onClick={() => openShopSearch(result.items[0])} className="text-[10px] bg-gold-400/20 hover:bg-gold-400 hover:text-black text-gold-300 px-4 py-2 rounded-full transition-all font-bold">최저가 확인하기 →</button>
                 </div>
               </div>
             </div>
@@ -167,14 +164,9 @@ function ResultContent() {
               <div className="flex items-center gap-5 p-4">
                 <div className="w-16 h-16 bg-black/30 rounded-2xl flex items-center justify-center text-3xl shadow-inner border border-white/5 group-hover:scale-105 transition-transform shrink-0">🖼️</div>
                 <div className="flex-1">
-                  <h4 className="text-white font-bold mb-1 font-sans text-lg break-keep">{result.items[1]}</h4>
-                  <p className="text-xs text-gray-400 mb-3 font-sans break-keep">재물운을 부르는 배치</p>
-                  <button 
-                    onClick={() => openShopSearch(result.items[1])}
-                    className="text-[10px] bg-gold-400/20 hover:bg-gold-400 hover:text-black text-gold-300 px-4 py-2 rounded-full transition-all font-bold font-sans"
-                  >
-                    스타일링 예시 보기 →
-                  </button>
+                  <h4 className="text-white font-bold mb-1 text-lg break-keep">{result.items[1]}</h4>
+                  <p className="text-xs text-gray-400 mb-3 break-keep">재물운을 부르는 배치</p>
+                  <button onClick={() => openShopSearch(result.items[1])} className="text-[10px] bg-gold-400/20 hover:bg-gold-400 hover:text-black text-gold-300 px-4 py-2 rounded-full transition-all font-bold">스타일링 예시 보기 →</button>
                 </div>
               </div>
             </div>
@@ -185,17 +177,17 @@ function ResultContent() {
         <section className="relative mt-4 animate-fade-in-up delay-300">
           <div className="absolute inset-0 bg-gradient-to-r from-gold-300/50 via-gold-500/50 to-gold-300/50 rounded-[2rem] opacity-60 blur-md animate-pulse"></div>
           
-          <div className={`relative bg-black/80 rounded-[2rem] overflow-hidden border border-gold-400/50 backdrop-blur-xl transition-all duration-700 ${isPaid ? 'p-0' : ''}`}>
+          <div className={`relative bg-black/80 rounded-[2rem] overflow-hidden border border-gold-400/50 backdrop-blur-xl transition-all duration-700`}>
             
             {/* --- A. 잠금 상태 --- */}
             {!isPaid && (
               <>
-                <div className="absolute inset-0 p-8 opacity-20 filter blur-[2px] select-none pointer-events-none overflow-hidden">
+                <div className="absolute inset-0 p-8 opacity-20 filter blur-[2px] select-none pointer-events-none overflow-hidden font-sans">
                   <h4 className="text-xl font-bold mb-6 font-serif text-gray-300 break-keep">2026년 월별 상세 가이드 미리보기</h4>
-                  <div className="space-y-4 text-sm font-sans text-gray-500">
-                    <p>1월: 침실 방향을...</p>
-                    <p>2월: 현관에 거울을...</p>
-                    <p>3월: 행운의 색상인...</p>
+                  <div className="space-y-4 text-sm text-gray-500">
+                    <p>1월: 침실 방향을 동쪽으로 바꾸면...</p>
+                    <p>2월: 현관에 거울을 새로 배치하여...</p>
+                    <p>3월: 행운의 색상인 블루 계열을...</p>
                   </div>
                 </div>
 
@@ -204,12 +196,12 @@ function ResultContent() {
                   <h3 className="text-xl md:text-2xl font-serif text-white mb-3 break-keep leading-tight px-4">
                     <span className="text-gold-400">2026년 대운</span> 시크릿 리포트
                   </h3>
-                  <p className="text-gray-300 text-xs mb-8 font-sans break-keep leading-relaxed opacity-80">
+                  <p className="text-gray-300 text-xs mb-8 break-keep leading-relaxed opacity-80">
                     남들에게는 보이지 않는<br className="md:hidden"/> 당신만의 월별 기회와 위기를 확인하세요.
                   </p>
                   <button 
                     onClick={handlePayment}
-                    className="w-full bg-gold-gradient text-black font-bold font-sans py-4 rounded-2xl hover:scale-[1.02] transition-all shadow-[0_0_25px_rgba(212,175,55,0.3)] text-base active:scale-[0.98] flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 leading-none"
+                    className="w-full bg-gold-gradient text-black font-bold py-4 rounded-2xl hover:scale-[1.02] transition-all shadow-[0_0_25px_rgba(212,175,55,0.3)] text-base active:scale-[0.98] flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 leading-none"
                   >
                     <span>지금 바로 잠금 해제</span>
                     <div className="flex items-center gap-1 text-sm">
@@ -221,9 +213,9 @@ function ResultContent() {
               </>
             )}
 
-            {/* --- B. 해제 상태 (Actionable Links Added) --- */}
+            {/* --- B. 해제 상태 (수정: 리포트 닫기 버튼 삭제됨) --- */}
             {isPaid && (
-              <div className="relative z-10 bg-charcoal animate-fade-in">
+              <div className="relative z-10 bg-charcoal animate-fade-in-up font-sans">
                  
                  {/* 리포트 헤더 */}
                  <div className="bg-gradient-to-b from-gold-900/40 to-charcoal p-8 pb-4 border-b border-white/5">
@@ -233,7 +225,7 @@ function ResultContent() {
                     </div>
                     
                     <div className="flex items-end gap-3 mb-4 mt-6">
-                       <div className="text-5xl font-bold font-serif text-white">88<span className="text-sm font-sans text-gray-500 font-normal ml-1">/100</span></div>
+                       <div className="text-5xl font-bold font-serif text-white">88<span className="text-sm text-gray-500 font-normal ml-1">/100</span></div>
                        <div className="text-sm text-gold-400 font-bold mb-2">▲ 상승세</div>
                     </div>
                     <div className="flex gap-2 flex-wrap">
@@ -242,8 +234,8 @@ function ResultContent() {
                     </div>
                  </div>
 
-                 {/* 분야별 상세 분석 + 구매 링크 추가 */}
-                 <div className="p-6 grid grid-cols-1 gap-4">
+                 {/* 분야별 상세 분석 */}
+                 <div className="p-6 grid grid-cols-1 gap-6">
                     
                     {/* 💰 재물운 */}
                     <div className="bg-white/5 p-5 rounded-2xl border border-white/5">
@@ -255,11 +247,10 @@ function ResultContent() {
                           <div className="text-3xl filter drop-shadow-[0_0_5px_rgba(212,175,55,0.5)] pt-1">🖤</div>
                           <div className="flex-1">
                              <div className="text-[10px] text-gold-400 font-bold tracking-widest mb-1">✨ KEY OBJET</div>
-                             <div className="text-white font-bold font-sans mb-1">검은색 가죽 지갑</div>
-                             <div className="text-[10px] text-gray-400 leading-tight font-sans mb-2">
+                             <div className="text-white font-bold mb-1">검은색 가죽 지갑</div>
+                             <div className="text-[10px] text-gray-400 leading-tight mb-3">
                                검은색(水)의 기운이 충동적인 지출(火)을 눌러주어 재물이 새는 것을 막아줍니다.
                              </div>
-                             {/* [NEW] 구매 버튼 추가 */}
                              <button 
                                 onClick={() => openShopSearch("검은색 가죽 지갑")}
                                 className="w-full bg-gold-400/10 hover:bg-gold-400 hover:text-black border border-gold-400/30 text-gold-400 text-[10px] py-2 rounded-lg transition-colors font-bold"
@@ -280,11 +271,10 @@ function ResultContent() {
                           <div className="text-3xl filter drop-shadow-[0_0_5px_rgba(248,113,113,0.5)] pt-1">💡</div>
                           <div className="flex-1">
                              <div className="text-[10px] text-red-300 font-bold tracking-widest mb-1">✨ KEY OBJET</div>
-                             <div className="text-white font-bold font-sans mb-1">웜톤 무드등</div>
-                             <div className="text-[10px] text-gray-400 leading-tight font-sans mb-2">
+                             <div className="text-white font-bold mb-1">웜톤 무드등</div>
+                             <div className="text-[10px] text-gray-400 leading-tight mb-3">
                                따뜻한 빛은 공간의 온도를 높여 차가운 기운을 녹이고 친밀감을 형성합니다.
                              </div>
-                             {/* [NEW] 구매 버튼 추가 */}
                              <button 
                                 onClick={() => openShopSearch("웜톤 무드등")}
                                 className="w-full bg-red-400/10 hover:bg-red-400 hover:text-black border border-red-400/30 text-red-300 text-[10px] py-2 rounded-lg transition-colors font-bold"
@@ -305,11 +295,10 @@ function ResultContent() {
                           <div className="text-3xl filter drop-shadow-[0_0_5px_rgba(96,165,250,0.5)] pt-1">🪴</div>
                           <div className="flex-1">
                              <div className="text-[10px] text-blue-300 font-bold tracking-widest mb-1">✨ KEY OBJET</div>
-                             <div className="text-white font-bold font-sans mb-1">소형 스투키 화분</div>
-                             <div className="text-[10px] text-gray-400 leading-tight font-sans mb-2">
-                               곧게 자라는 식물의 목(木) 기운이 성장을 돕고, 공기 정화로 머리를 맑게 합니다.
+                             <div className="text-white font-bold mb-1">소형 스투키 화분</div>
+                             <div className="text-[10px] text-gray-400 leading-tight mb-3">
+                               곧게 자라는 식물의 목(木) 기운이 성장을 돕고 머리를 맑게 합니다.
                              </div>
-                             {/* [NEW] 구매 버튼 추가 */}
                              <button 
                                 onClick={() => openShopSearch("소형 스투키 화분")}
                                 className="w-full bg-blue-400/10 hover:bg-blue-400 hover:text-black border border-blue-400/30 text-blue-300 text-[10px] py-2 rounded-lg transition-colors font-bold"
@@ -322,47 +311,41 @@ function ResultContent() {
                  </div>
 
                  {/* 월별 흐름 */}
-                 <div className="px-6 pb-6">
+                 <div className="px-6 pb-10 border-b border-white/5">
                     <h4 className="text-white font-serif text-md mb-4 flex items-center gap-2">
                        <span className="w-1.5 h-1.5 bg-gold-400 rounded-full"></span> 2026년 흐름
                     </h4>
                     <div className="space-y-3">
                        <div className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 items-center">
-                          <div className="text-gold-400 font-bold text-xs w-12 shrink-0">1월-3월<br/>(봄)</div>
+                          <div className="text-gold-400 font-bold text-xs w-12 shrink-0">1월-3월</div>
                           <div className="text-xs text-gray-400 break-keep">
-                             시작의 기운이 좋으나 마무리가 약합니다.
-                             <br/><strong className="text-white mt-1 block">👉 추천: {result.items && result.items[0]} 휴대</strong>
+                             시작의 기운이 좋으나 마무리가 약합니다. <strong className="text-white">👉 {result.items && result.items[0]} 휴대 추천</strong>
                           </div>
                        </div>
                        <div className="flex gap-4 p-4 bg-white/5 rounded-2xl border border-white/5 items-center">
-                          <div className="text-red-400 font-bold text-xs w-12 shrink-0">4월-6월<br/>(여름)</div>
+                          <div className="text-red-400 font-bold text-xs w-12 shrink-0">4월-6월</div>
                           <div className="text-xs text-gray-400 break-keep">
-                             에너지가 과열될 수 있으니 물가를 찾으세요.
-                             <br/><strong className="text-white mt-1 block">👉 추천: 블루 계열 소품</strong>
+                             에너지가 과열될 수 있으니 시원한 블루 계열 소품을 가까이 하세요.
                           </div>
                        </div>
                     </div>
                  </div>
 
-                 {/* 스페셜 팁 */}
-                 <div className="mx-6 mb-8 bg-red-900/20 border border-red-500/20 p-4 rounded-xl">
-                    <h4 className="text-red-400 font-bold text-xs mb-1">⚠️ 주의사항 (Warning)</h4>
-                    <p className="text-[11px] text-red-200/80 leading-relaxed break-keep">
-                       올해 집안의 <strong className="text-red-200">북서쪽</strong>에는 붉은 물건을 두지 마세요. 깨진 거울은 즉시 버리세요.
+                 {/* 맺음말 */}
+                 <div className="p-8 text-center bg-gradient-to-t from-black/50 to-transparent">
+                    <p className="text-xs text-gray-500 italic font-serif">
+                       &quot;작은 오브제가 당신의 공간을 바꾸고,<br/>바뀐 공간이 당신의 운명을 완성합니다.&quot;
                     </p>
                  </div>
-
-                 <button className="w-full border-t border-white/10 text-gray-500 text-xs py-4 hover:bg-white/5 transition-colors">
-                    리포트 닫기
-                 </button>
               </div>
             )}
 
           </div>
         </section>
 
-        <div className="flex justify-center pb-8">
-          <button onClick={shareToKakao} className="flex items-center gap-2 bg-[#FEE500] text-[#000000] px-6 py-3 rounded-xl font-sans font-bold hover:scale-105 transition-transform">
+        {/* 하단 공유 섹션 */}
+        <div className="flex justify-center pb-8 mt-4">
+          <button onClick={shareToKakao} className="flex items-center gap-2 bg-[#FEE500] text-[#000000] px-6 py-3 rounded-xl font-bold hover:scale-105 transition-transform shadow-lg">
             <span className="text-xl">💬</span> 친구에게 사이트 추천하기
           </button>
         </div>
