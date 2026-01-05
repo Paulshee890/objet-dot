@@ -49,7 +49,7 @@ function ResultContent() {
   // [기능 강화] 카카오톡 공유하기 (없으면 강제 로딩)
   const shareToKakao = () => {
     // ⚠️ [중요] PM님의 실제 JavaScript 키를 여기에 꼭 넣어주세요!
-    const KAKAO_KEY = "5541daed53e80a7fd5abcb6df5bf526f"; 
+    const KAKAO_KEY = "5541daed53e80a7fd5abcbd6f5bf526f"; 
 
     // 2. SDK가 없으면 강제로 스크립트를 만들어서 로딩함
     if (!window.Kakao) {
