@@ -20,7 +20,6 @@ declare global {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     Kakao: any;
   }
-
 }
 
 function ResultContent() {
@@ -47,42 +46,55 @@ function ResultContent() {
     return () => clearTimeout(timer);
   }, [birthDate, router]);
 
-  // [기능 수정] 사이트 추천(초대) 공유하기
+  // [기능 강화] 카카오톡 공유하기 (없으면 강제 로딩)
   const shareToKakao = () => {
+    // ⚠️ [중요] PM님의 실제 JavaScript 키를 여기에 꼭 넣어주세요!
+    const KAKAO_KEY = "5541daed53e80a7fd5abcbd6f5bf526f"; 
+
+    // 2. SDK가 없으면 강제로 스크립트를 만들어서 로딩함
     if (!window.Kakao) {
-      alert("카카오톡 SDK가 로드되지 않았습니다.");
-      return;
+      const script = document.createElement("script");
+      script.src = "https://t1.kakaocdn.net/kakao_js_sdk/2.7.2/kakao.min.js";
+      script.async = true;
+      script.onload = () => {
+        if (!window.Kakao.isInitialized()) {
+          window.Kakao.init(KAKAO_KEY);
+        }
+        sendKakaoLink(); // 로딩 후 바로 공유창 띄우기
+      };
+      document.body.appendChild(script);
+      return; 
     }
 
+    // 3. 이미 있으면 바로 실행
     if (!window.Kakao.isInitialized()) {
-      // ⚠️ PM님의 [JavaScript 키]를 꼭 확인하세요!
-      window.Kakao.init("5541daed53e80a7fd5abcbd6f5bf526f"); 
+      window.Kakao.init(KAKAO_KEY);
     }
+    sendKakaoLink();
+  };
 
-    // [핵심 변경] 현재 페이지(결과)가 아니라 '메인 홈페이지' 주소를 넣습니다.
-    // window.location.origin은 "https://objet-dot.vercel.app" 같은 도메인만 가져옵니다.
-    const homeUrl = window.location.origin; 
-
+  // 실제 메시지 보내는 함수
+  const sendKakaoLink = () => {
+    // 현재 보고 있는 실제 주소 (공유 링크)
+    const currentUrl = window.location.href; 
+    
     window.Kakao.Share.sendDefault({
       objectType: 'feed',
       content: {
-        // [변경] 결과 내용 대신 서비스 소개 멘트로 변경
-        title: "Objet Dot | 당신의 공간에 운을 더하다",
-        description: "사주 명리학 데이터로 공간의 결핍을 찾아, 당신의 운을 완성하는 오브제를 제안합니다.",
-        imageUrl:
-          'https://objet-dot.vercel.app/og-image.jpg', // public 폴더의 대표 이미지
+        title: `[Objet Dot] ${result?.koreanName}(${result?.element})의 부족한 기운은?`,
+        description: `나에게 필요한 행운의 아이템: ${result?.items.join(", ")}`,
+        imageUrl: 'https://objet-dot.vercel.app/og-image.png',
         link: {
-          mobileWebUrl: homeUrl,
-          webUrl: homeUrl,
+          mobileWebUrl: currentUrl,
+          webUrl: currentUrl,
         },
       },
       buttons: [
         {
-          // [변경] 버튼 문구도 '나도 해보기'로 변경
-          title: '나도 내 운세 확인하기',
+          title: '결과 확인하기',
           link: {
-            mobileWebUrl: homeUrl,
-            webUrl: homeUrl,
+            mobileWebUrl: currentUrl,
+            webUrl: currentUrl,
           },
         },
       ],
@@ -126,14 +138,12 @@ function ResultContent() {
           <p className="text-gold-400 text-[10px] tracking-widest uppercase text-center mb-3 font-sans font-bold">Your Essential Element</p>
           <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-[2rem] p-8 text-center shadow-2xl relative overflow-hidden group">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-40 bg-gold-400/20 rounded-full blur-[60px] group-hover:bg-gold-400/30 transition-all duration-500"></div>
-            
             <h1 className="relative text-5xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-gray-400 mb-4 mt-2 break-keep">
               {result.koreanName}
               <span className="block text-lg font-sans font-bold text-gold-400 mt-2 tracking-[0.2em] uppercase opacity-80">
                 {result.element} Energy
               </span>
             </h1>
-            
             <div className="relative bg-black/30 rounded-2xl p-5 border border-white/5 backdrop-blur-md">
               <p className="text-gray-200 text-sm leading-relaxed font-sans break-keep">
                 &quot;{result.desc}&quot;
@@ -150,7 +160,6 @@ function ResultContent() {
                  style={{ backgroundColor: result.color === '화이트' ? '#F1F5F9' : result.color === '블랙' ? '#18181B' : result.color === '레드' ? '#DC2626' : result.color === '그린' ? '#15803D' : '#FACC15' }}></div>
             <span className="text-white font-bold font-sans break-keep text-center">{result.color}</span>
           </div>
-          
           <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 flex flex-col items-center justify-center gap-3 hover:border-gold-400/30 transition-colors group">
             <span className="text-gray-500 text-[10px] uppercase tracking-widest font-bold font-sans">Direction</span>
             <span className="text-3xl group-hover:scale-110 transition-transform">🧭</span>
@@ -196,7 +205,7 @@ function ResultContent() {
           </div>
         </section>
 
-        {/* 4. 유료 리포트 */}
+        {/* 4. 유료 리포트 (모바일 최적화 유지) */}
         <section className="relative mt-4 animate-fade-in-up delay-300">
           <div className="absolute inset-0 bg-gradient-to-r from-gold-300/50 via-gold-500/50 to-gold-300/50 rounded-[2rem] opacity-60 blur-md animate-pulse"></div>
           <div className="relative bg-black/80 rounded-[2rem] overflow-hidden border border-gold-400/50 backdrop-blur-xl">
@@ -213,9 +222,12 @@ function ResultContent() {
               <div className="w-14 h-14 bg-gold-gradient rounded-full flex items-center justify-center text-2xl mb-5 shadow-[0_0_20px_rgba(212,175,55,0.4)] animate-bounce">
                 🔓
               </div>
+              
+              {/* [확인] Z Flip에서 한 줄로 보이도록 글자 크기 조정됨 */}
               <h3 className="text-xl md:text-2xl font-serif text-white mb-3 break-keep leading-tight px-4">
                 <span className="text-gold-400">2026년 대운</span> 시크릿 리포트
               </h3>
+              
               <p className="text-gray-300 text-xs mb-8 font-sans break-keep leading-relaxed opacity-80">
                 남들에게는 보이지 않는<br className="md:hidden"/> 당신만의 월별 기회와 위기를 확인하세요.
               </p>
@@ -230,14 +242,14 @@ function ResultContent() {
           </div>
         </section>
 
-        {/* 5. 카카오톡 친구 초대 버튼 */}
+        {/* 5. 카카오톡 공유 버튼 */}
         <div className="flex justify-center pb-8">
           <button 
             onClick={shareToKakao}
             className="flex items-center gap-2 bg-[#FEE500] text-[#000000] px-6 py-3 rounded-xl font-sans font-bold hover:scale-105 transition-transform"
           >
             <span className="text-xl">💬</span>
-            친구에게 사이트 추천하기
+            카카오톡으로 결과 공유하기
           </button>
         </div>
         
