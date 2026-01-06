@@ -59,7 +59,7 @@ function ResultContent() {
 
     if (!window.Kakao.isInitialized()) {
       // ⚠️ 실제 서비스 시 본인의 JavaScript 키로 교체 필요
-      window.Kakao.init("YOUR_KAKAO_JAVASCRIPT_KEY"); 
+      window.Kakao.init("5541daed53e80a7fd5abcbd6f5bf526f"); 
     }
 
     const homeUrl = window.location.origin; 
